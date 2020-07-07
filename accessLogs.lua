@@ -30,7 +30,7 @@ function main()
 
     local f = io.open('/disk/' .. Filename, 'a')
 
-    if not f then
+    if not f then 
         print('Could not open file /disk/' .. Filename)
     end
 
