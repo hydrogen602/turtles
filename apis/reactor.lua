@@ -26,6 +26,7 @@ end
 setmetatable(ReactorPrototype, {__call=ReactorPrototype.new})
 
 function ReactorPrototype:getEfficiency() -- in RF/mB
+    if self.react.getFuelConsumedLastTick() == 0 then return 0 end
     return self.react.getEnergyProducedLastTick() / self.react.getFuelConsumedLastTick()
 end
 
@@ -61,7 +62,11 @@ function ReactorPrototype:setControlRods()
     --     self.controlRodLvl = newControlRodLvl
     -- end
 
-    self.react.setControlRods(self.controlRodLvl)
+    local cCount = self.react.getNumberOfControlRods()
+
+    for i = 0, cCount - 1 do
+        self.react.setControlRodLevel(i, self.controlRodLvl)
+    end
 
     return self.controlRodLvl
 end
