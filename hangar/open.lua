@@ -55,11 +55,12 @@ end
 function pullFarSideIn()
     for i = 1, 7 do
         pulseTop(colors.blue)
-        sleep(1.1)
+        sleep(1)
     end
 end
 
 openLeftWing()
 openNearAndFarSide()
+sleep(2.2)
 pullFarSideIn()
 openRightWing()

@@ -45,18 +45,17 @@ function closeRightWing()
 end
 
 function closeNearAndFarSide()
+    pulseTop(colors.green)
     pulseTop(colors.lightBlue)
     sleep(2.2)
-    pulseBottom(colors.green)
+    pulseTop(colors.green)
     pulseTop(colors.lightBlue)
-    sleep(2.2)
-    pulseBottom(colors.green)
 end
 
 function pushFarSideOut()
     for i = 1, 7 do
         pulseTop(colors.white)
-        sleep(1.1)
+        sleep(1)
     end
 end
 
