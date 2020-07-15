@@ -36,30 +36,33 @@ function pulseBottom(color)
     removeBottom(color)
 end
 
-function openLeftWing()
-    addBottom(colors.lightBlue)
+function closeLeftWing()
+    removeBottom(colors.lightBlue)
 end
 
-function openRightWing()
-    addBottom(colors.lime)
+function closeRightWing()
+    removeBottom(colors.lime)
 end
 
-function openNearAndFarSide()
-    pulseBottom(colors.blue)
-    pulseTop(colors.lime)
+function closeNearAndFarSide()
+    pulseTop(colors.lightBlue)
     sleep(2.2)
-    pulseBottom(colors.blue)
-    pulseTop(colors.lime)
+    pulseBottom(colors.green)
+    pulseTop(colors.lightBlue)
+    sleep(2.2)
+    pulseBottom(colors.green)
 end
 
-function pullFarSideIn()
+function pushFarSideOut()
     for i = 1, 7 do
-        pulseTop(colors.blue)
+        pulseTop(colors.white)
         sleep(1.1)
     end
 end
 
-openLeftWing()
-openNearAndFarSide()
-pullFarSideIn()
-openRightWing()
+closeRightWing()
+closeLeftWing()
+pushFarSideOut()
+closeNearAndFarSide()
+
+
