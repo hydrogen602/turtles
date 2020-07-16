@@ -64,3 +64,7 @@ openNearAndFarSide()
 sleep(2.2)
 pullFarSideIn()
 openRightWing()
+
+local f = io.open('state.txt', 'w')
+f:write('open')
+f:close()

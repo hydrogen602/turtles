@@ -64,4 +64,6 @@ closeLeftWing()
 pushFarSideOut()
 closeNearAndFarSide()
 
-
+local f = io.open('state.txt', 'w')
+f:write('close')
+f:close()
