@@ -82,7 +82,7 @@ function main()
         return true
     end
 
-    if user == 'Hydrogen10' and pass == 'windowsSucks' then
+    if user == 'Hydrogen10' and pass == 'windowssucks' then
         openDoor()
     elseif user == 'rct45011' and pass == 'smoothTable' then
         openDoor()
