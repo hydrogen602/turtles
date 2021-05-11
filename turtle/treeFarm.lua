@@ -14,7 +14,7 @@ end
 
 -- TurtlePlus
 
----[[
+--[[
 require 'apis.turtlePlus'
 local turtlePlus = {
     getBlockName=getBlockName,
@@ -22,6 +22,8 @@ local turtlePlus = {
     RelativeDir=RelativeDir
 }
 --]]
+
+os.loadAPI('turtlePlus')
 
 local t = TurtlePlus:new()
 
