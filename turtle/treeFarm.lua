@@ -84,6 +84,7 @@ local function chopTree()
         turtle.digUp()
     end
     assert(turtle.up())
+    dy = dy + 1
     if searchAndSelect('minecraft:sapling') then
         turtle.placeDown()
     end
