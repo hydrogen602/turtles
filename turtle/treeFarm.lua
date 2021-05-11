@@ -21,12 +21,13 @@ end
 
 local function aggresiveForward()
     local tries = 0
-    while tries < 100 do
+    while tries < 20 do
         if turtle.forward() then 
-            break
+            return
         end
         turtle.attack()
         sleep(0.6)
+        tries = tries + 1
     end
     error("Error: can't move forward.")
 end
@@ -127,15 +128,19 @@ end
 
 local function chopAll()
     while true do
-        while not turtle.detectDown() do
+        local first = true
+        while not turtle.detectDown() or first do
             if turtle.detect() then break end
+            first = false
             aggresiveForward()
         end
         turtle.turnLeft()
         chopTreeLine()
         turtle.turnRight()
-        while not turtle.detectDown() do
+        first = true
+        while not turtle.detectDown() or first do
             if turtle.detect() then break end
+            first = false
             aggresiveForward()
         end
         turtle.turnRight()
