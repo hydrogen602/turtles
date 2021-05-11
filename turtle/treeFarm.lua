@@ -6,76 +6,40 @@ local function assert(condition)
     end
 end
 
-local function searchAndSelect(name)
-    for i=1,16 do
-        local data = turtle.getItemDetail()
-        if data ~= nil and data['name'] == name then
-            turtle.select(i)
-            return true
-        end
-    end
-    return false
-end
-
--- movement util
-
-local function aggresiveForward()
-    local tries = 0
-    while tries < 20 do
-        if turtle.forward() then 
-            return
-        end
-        turtle.attack()
-        sleep(0.6)
-        tries = tries + 1
-    end
-    error("Error: can't move forward.")
-end
-
-local function getBlockNameAbove()
-    local isBlock, data = turtle.inspectUp()
-    if isBlock then
-        return data['name']
-    else
-        return nil
+local function assertEquals(actual, expected)
+    if actual ~= expected then
+        error("expected "..expected.." but got "..actual)
     end
 end
 
-local function getBlockNameBelow()
-    local isBlock, data = turtle.inspectDown()
-    if isBlock then
-        return data['name']
-    else
-        return nil
-    end
-end
+-- TurtlePlus
 
-local function getBlockName()
-    local isBlock, data = turtle.inspect()
-    if isBlock then
-        return data['name']
-    else
-        return nil
-    end
-end
+---[[
+require 'apis.turtlePlus'
+local turtlePlus = {
+    getBlockName=getBlockName,
+    searchAndSelect=searchAndSelect,
+    RelativeDir=RelativeDir
+}
+--]]
+
+local t = TurtlePlus:new()
+
+-- code
 
 local function chopTree()
-    local isBlock, data = turtle.inspect()
-    if not isBlock then
-        error(data)
-    elseif data['name'] ~= 'minecraft:log' then
-        error('Expected tree, but got ' .. data['name'])
+    if turtlePlus.getBlockName() ~= 'minecraft:log' then
+        error('Expected tree, but got ' .. turtlePlus.getBlockName())
     end
 
     assert(turtle.dig())
-    aggresiveForward()
+    t:aggresiveForward()
 
-    local dy = 0
+    assert(t.dy == 0)
     
     while getBlockNameBelow() == 'minecraft:log' do
         assert(turtle.digDown())
-        assert(turtle.down())
-        dy = dy - 1
+        assert(t:down())
     end
 
     assert(getBlockNameBelow() == 'minecraft:dirt')
@@ -83,29 +47,26 @@ local function chopTree()
     if turtle.detectUp() then
         turtle.digUp()
     end
-    assert(turtle.up())
-    dy = dy + 1
-    if searchAndSelect('minecraft:sapling') then
+    t:aggresiveUp()
+
+    if turtlePlus.searchAndSelect('minecraft:sapling') then
         turtle.placeDown()
     end
 
-    while dy < 0 do
-        assert(turtle.up())
-        dy = dy + 1
-    end    
+    while t.dy < 0 do
+        t:aggresiveUp()
+    end
     
     while getBlockNameAbove() == 'minecraft:log' do
         assert(turtle.digUp())
-        assert(turtle.up())
-        dy = dy + 1
+        t:aggresiveUp()
     end
 
-    while dy > 0 do
-        assert(turtle.down())
-        dy = dy - 1
+    while t.dy > 0 do
+        t:aggresiveDown()
     end
 
-    assert(dy == 0)
+    assert(t.dy == 0)
 end
 
 local function chopTreeLine() 
@@ -114,7 +75,7 @@ local function chopTreeLine()
             block = getBlockName()
             if block == 'minecraft:leaves' then
                 assert(turtle.dig())
-                aggresiveForward()
+                t:aggresiveForward()
             elseif block == 'minecraft:log' then
                 chopTree()
             else
@@ -122,7 +83,7 @@ local function chopTreeLine()
                 break
             end
         else
-            aggresiveForward()
+            t:aggresiveForward()
         end
     end
 end
@@ -131,57 +92,55 @@ local function chopAll()
     while true do
         local first = true
         while not turtle.detectDown() or first do
-            if turtle.detect() then break end
+            if turtle.detect() then
+                break
+            end
             first = false
-            aggresiveForward()
+            t:aggresiveForward()
         end
-        turtle.turnLeft()
+        t:turnLeft()
         chopTreeLine()
-        turtle.turnRight()
+        t:turnRight()
         first = true
         while not turtle.detectDown() or first do
-            if turtle.detect() then break end
+            if turtle.detect() then
+                break
+            end
             first = false
-            aggresiveForward()
+            t:aggresiveForward()
         end
-        turtle.turnRight()
+        t:turnRight()
         chopTreeLine()
-        turtle.turnLeft()
+        t:turnLeft()
     end
 
     -- facing other wall
-    turtle.turnRight()
-    turtle.turnRight()
+    t:faceDir(turtlePlus.RelativeDir.REVERSE)
 
-    while not turtle.detect() do
-        aggresiveForward()
+    while t.dx > 0 do
+        t:aggresiveForward()
     end
 
-    if getBlockName() == 'minecraft:chest' then
-        return
+    assert(t.dx == 0)
+
+    if t.dz > 0 then
+        t:faceDir(turtlePlus.RelativeDir.LEFT)
+    elseif t.dz < 0 then
+        t:faceDir(turtlePlus.RelativeDir.RIGHT)
+    else
+        t:faceOriginal()
+        return -- at target
+    end
+    
+    while t.dz ~= 0 do
+        t:aggresiveForward()
     end
 
-    turtle.turnLeft()
-    if turtle.detect() then
-        turtle.turnRight()
-        turtle.turnRight()
+    if t.dz == 0 and t.dx == 0 and t.dy == 0 then
+        t:faceOriginal()
+    else
+        error("should be home, but is not")
     end
-
-    while not turtle.detect() do
-        aggresiveForward()
-    end
-
-    turtle.turnLeft()
-    if getBlockName() == 'minecraft:chest' then
-        return
-    end
-    turtle.turnRight()
-    turtle.turnRight()
-    if getBlockName() == 'minecraft:chest' then
-        return
-    end
-
-    error("Can't find home base")
 end
 
 

@@ -35,28 +35,41 @@ function TurtlePlus:new()
     return o
 end
 
+setmetatable(TurtlePlus, {__call=TurtlePlus.new})
+
 function TurtlePlus:forward()
-    print('forward')
     if not turtle.forward() then
         return false -- move failed
     end
 
     if self.relDir == RelativeDir.ORIGINAL then
-        dx = dx + 1
+        self.dx = self.dx + 1
     elseif self.relDir == RelativeDir.REVERSE then
-        dx = dx - 1
+        self.dx = self.dx - 1
     elseif self.relDir == RelativeDir.RIGHT then
-        dz = dz + 1
+        self.dz = self.dz + 1
     elseif self.relDir == RelativeDir.LEFT then
-        dz = dz - 1
+        self.dz = self.dz - 1
     else
         error('Invalid direction: '..self.relDir)
     end
     return true
 end
 
+function TurtlePlus:aggresiveForward()
+    local tries = 0
+    while tries < 20 and not turtle.detect() do
+        if self:forward() then
+            return
+        end
+        turtle.attack()
+        sleep(0.6)
+        tries = tries + 1
+    end
+    error("Error: can't move forward.")
+end
+
 function TurtlePlus:back()
-    print('back')
     if not turtle.back() then
         return false -- move failed
     end
@@ -83,12 +96,38 @@ function TurtlePlus:up()
     return true
 end
 
+function TurtlePlus:aggresiveUp()
+    local tries = 0
+    while tries < 20 and not turtle.detectUp() do
+        if self:up() then
+            return
+        end
+        turtle.attackUp()
+        sleep(0.6)
+        tries = tries + 1
+    end
+    error("Error: can't move up.")
+end
+
 function TurtlePlus:down()
     if not turtle.up() then
         return false
     end
     self.dy = self.dy - 1
     return true
+end
+
+function TurtlePlus:aggresiveDown()
+    local tries = 0
+    while tries < 20 and not turtle.detectDown() do
+        if self:down() then
+            return
+        end
+        turtle.attackDown()
+        sleep(0.6)
+        tries = tries + 1
+    end
+    error("Error: can't move down.")
 end
 
 function TurtlePlus:turn(turnNum)
@@ -114,27 +153,85 @@ function TurtlePlus:turn(turnNum)
 end
 
 function TurtlePlus:turnRight()
-    TurtlePlus:turn(RelativeDir.RIGHT)
+    self:turn(RelativeDir.RIGHT)
 end
 
 function TurtlePlus:turnLeft()
-    TurtlePlus:turn(RelativeDir.LEFT)
+    self:turn(RelativeDir.LEFT)
 end
 
 function TurtlePlus:turnAround()
-    TurtlePlus:turn(RelativeDir.REVERSE)
+    self:turn(RelativeDir.REVERSE)
 end
 
 function TurtlePlus:faceDir(turnNum) 
     if type(turnNum) ~= "number" then
         error("TurtlePlus:faceDir => TypeError: Expected number but got "..type(turnNum))
     end
-    TurtlePlus:turn(-self.relDir + turnNum)
+    self:turn(-self.relDir + turnNum)
 end
 
 function TurtlePlus:faceOriginal() 
-    TurtlePlus:turn(-self.relDir)
+    self:turn(-self.relDir)
+end
+
+-- Move forward while funcCondition(TurtlePlus) evaluates to true and there is no block in the way
+-- attacks mobs in the way
+function TurtlePlus:forwardWhile(funcCondition)
+    if type(funcCondition) ~= "function" then
+        error("TurtlePlus:forwardWhile => TypeError: Expected function but got "..type(funcCondition))
+    end
+
+    local function condition()
+        local result = funcCondition(self)
+        if type(result) ~= "boolean" then 
+            error("TurtlePlus:forwardWhile => TypeError: Expected function to return boolean but got "..type(result))
+        end
+        return result
+    end
+
+    while condition() do
+        self:aggresiveForward()
+    end
 end
 
 
-setmetatable(TurtlePlus, {__call=TurtlePlus.new})
+-- non-movement stuff
+
+function getBlockNameAbove()
+    local isBlock, data = turtle.inspectUp()
+    if isBlock then
+        return data['name']
+    else
+        return nil
+    end
+end
+
+function getBlockNameBelow()
+    local isBlock, data = turtle.inspectDown()
+    if isBlock then
+        return data['name']
+    else
+        return nil
+    end
+end
+
+function getBlockName()
+    local isBlock, data = turtle.inspect()
+    if isBlock then
+        return data['name']
+    else
+        return nil
+    end
+end
+
+function searchAndSelect(name)
+    for i=1,16 do
+        local data = turtle.getItemDetail()
+        if data ~= nil and data['name'] == name then
+            turtle.select(i)
+            return true
+        end
+    end
+    return false
+end
