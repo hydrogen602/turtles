@@ -1,6 +1,6 @@
 local tArgs = { ... }
 
-if #tArgs < 1 or #tArgs > 2 then 
+if #tArgs ~= 1 then 
     print('Usage: wget url')
     return
 end
@@ -14,7 +14,8 @@ end
 local text = fw.readAll()
 fw.close()
 
-local f = io.open(tArgs[2], 'w')
+local fileName = (tArgs[1]):gsub(".*/", "")
+local f = io.open(fileName, 'w') -- tArgs[2]
 if f == nil then
     print('Could not open file')
     return
