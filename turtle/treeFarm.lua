@@ -14,7 +14,7 @@ end
 
 -- TurtlePlus
 
---[[
+---[[
 require 'apis.turtlePlus'
 local turtlePlus = {
     getBlockName=getBlockName,
@@ -156,9 +156,25 @@ local function chopAll()
     end
 end
 
+if turtle.getFuelLevel < 300 then
+    error('Add more fuel')
+end
 
 local before = turtle.getFuelLevel()
 chopAll()
 local after = turtle.getFuelLevel()
 
-print('Consumed '..(after-before)..' fuel')
+print('Consumed '..(before-after)..' fuel')
+
+while turtle.getFuelLevel < 300 do
+    if turtlePlus.searchAndSelect('minecraft:planks') then
+        turtle.refuel()
+    elseif turtlePlus.searchAndSelect('minecraft:log') then
+        turtle.craft(1)
+    else
+        print('cant refuel')
+        break
+    end
+end
+
+

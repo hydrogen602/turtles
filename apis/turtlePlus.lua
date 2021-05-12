@@ -227,7 +227,7 @@ end
 
 function searchAndSelect(name)
     for i=1,16 do
-        local data = turtle.getItemDetail()
+        local data = turtle.getItemDetail(i)
         if data ~= nil and data['name'] == name then
             turtle.select(i)
             return true
