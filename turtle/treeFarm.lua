@@ -14,18 +14,19 @@ end
 
 -- TurtlePlus
 
----[[
+--[[
 require 'apis.turtlePlus'
 local turtlePlus = {
     getBlockName=getBlockName,
     searchAndSelect=searchAndSelect,
-    RelativeDir=RelativeDir
+    RelativeDir=RelativeDir,
+    TurtlePlus=TurtlePlus
 }
 --]]
 
 os.loadAPI('turtlePlus')
 
-local t = TurtlePlus:new()
+local t = turtlePlus.TurtlePlus:new()
 
 -- code
 
