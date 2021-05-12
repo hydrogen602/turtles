@@ -14,7 +14,7 @@ end
 
 -- TurtlePlus
 
---[[
+---[[
 require 'apis.turtlePlus'
 local turtlePlus = {
     getBlockName=getBlockName,
@@ -39,12 +39,12 @@ local function chopTree()
 
     assert(t.dy == 0)
     
-    while getBlockNameBelow() == 'minecraft:log' do
+    while turtlePlus.getBlockNameBelow() == 'minecraft:log' do
         assert(turtle.digDown())
-        assert(t:down())
+        t:aggresiveDown()
     end
 
-    assert(getBlockNameBelow() == 'minecraft:dirt')
+    assert(turtlePlus.getBlockNameBelow() == 'minecraft:dirt')
 
     if turtle.detectUp() then
         turtle.digUp()
@@ -59,7 +59,7 @@ local function chopTree()
         t:aggresiveUp()
     end
     
-    while getBlockNameAbove() == 'minecraft:log' do
+    while turtlePlus.getBlockNameAbove() == 'minecraft:log' do
         assert(turtle.digUp())
         t:aggresiveUp()
     end
@@ -74,7 +74,7 @@ end
 local function chopTreeLine() 
     while true do
         if turtle.detect() then
-            block = getBlockName()
+            block = turtlePlus.getBlockName()
             if block == 'minecraft:leaves' then
                 assert(turtle.dig())
                 t:aggresiveForward()
@@ -91,14 +91,19 @@ local function chopTreeLine()
 end
 
 local function chopAll()
+    local done = false
     while true do
         local first = true
         while not turtle.detectDown() or first do
             if turtle.detect() then
+                done = true
                 break
             end
             first = false
             t:aggresiveForward()
+        end
+        if done then
+            break
         end
         t:turnLeft()
         chopTreeLine()
@@ -106,10 +111,14 @@ local function chopAll()
         first = true
         while not turtle.detectDown() or first do
             if turtle.detect() then
+                done = true
                 break
             end
             first = false
             t:aggresiveForward()
+        end
+        if done then
+            break
         end
         t:turnRight()
         chopTreeLine()
@@ -117,6 +126,7 @@ local function chopAll()
     end
 
     -- facing other wall
+    print('Going home')
     t:faceDir(turtlePlus.RelativeDir.REVERSE)
 
     while t.dx > 0 do

@@ -110,7 +110,7 @@ function TurtlePlus:aggresiveUp()
 end
 
 function TurtlePlus:down()
-    if not turtle.up() then
+    if not turtle.down() then
         return false
     end
     self.dy = self.dy - 1
