@@ -14,7 +14,7 @@ end
 
 -- TurtlePlus
 
----[[
+--[[
 require 'apis.turtlePlus'
 local turtlePlus = {
     getBlockName=getBlockName,
@@ -53,7 +53,9 @@ local function chopTree()
     t:aggresiveUp()
 
     if turtlePlus.searchAndSelect('minecraft:sapling') then
-        turtle.placeDown()
+        if turtle.getItemCount() > 1 then -- dont place the last one
+            turtle.placeDown()
+        end
     end
 
     while t.dy < 0 do
@@ -156,7 +158,7 @@ local function chopAll()
     end
 end
 
-if turtle.getFuelLevel < 300 then
+if turtle.getFuelLevel() < 300 then
     error('Add more fuel')
 end
 
@@ -166,7 +168,7 @@ local after = turtle.getFuelLevel()
 
 print('Consumed '..(before-after)..' fuel')
 
-while turtle.getFuelLevel < 300 do
+while turtle.getFuelLevel() < 300 do
     if turtlePlus.searchAndSelect('minecraft:planks') then
         turtle.refuel()
     elseif turtlePlus.searchAndSelect('minecraft:log') then
@@ -177,4 +179,10 @@ while turtle.getFuelLevel < 300 do
     end
 end
 
+turtlePlus.searchAndSelect('minecraft:sapling')
+turtle.suck()
+
+while turtlePlus.searchAndSelect('minecraft:log') do
+    turtle.drop()
+end
 
