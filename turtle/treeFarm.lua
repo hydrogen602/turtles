@@ -179,10 +179,11 @@ while turtle.getFuelLevel() < 300 do
     end
 end
 
+t:faceDir(turtlePlus.RelativeDir.REVERSE)
 turtlePlus.searchAndSelect('minecraft:sapling')
 turtle.suck()
 
 while turtlePlus.searchAndSelect('minecraft:log') do
     turtle.drop()
 end
-
+t:faceOriginal()
