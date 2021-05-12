@@ -172,15 +172,15 @@ t:faceDir(turtlePlus.RelativeDir.REVERSE)
 while turtle.getFuelLevel() < 300 do
     if turtlePlus.searchAndSelect('minecraft:planks') then
         turtle.refuel()
-    elseif turtlePlus.searchAndSelect('minecraft:log') and turtle.getItemCount() > 1 then
+    elseif turtlePlus.searchAndSelect('minecraft:log') then
         turtle.craft(1) -- keep 1
     else
-        if turtlePlus.searchAndSelect('minecraft:log') and turtle.suck() then
+        --if turtlePlus.searchAndSelect('minecraft:log') and turtle.suck() then
             
-        else
-            print('cant refuel')
-            break
-        end
+        --else
+        print('cant refuel')
+        break
+        --end
     end
 end
 
@@ -188,6 +188,7 @@ turtlePlus.searchAndSelect('minecraft:sapling')
 turtle.suck()
 
 while turtlePlus.searchAndSelect('minecraft:log') do
-    turtle.drop(turtle.getItemCount()-1)
+
+    turtle.drop(math.max(turtle.getItemCount()-5, 0))
 end
 t:faceOriginal()
