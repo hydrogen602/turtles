@@ -182,14 +182,33 @@ for i=1,16 do
     end
 end
 
+if peripheral.getType('front') ~= 'chest' then
+    error('need to be in front of chest')
+end
+
+local chest = peripheral.wrap('front')
+
+local suckedLogsFromChest = false
 while turtle.getFuelLevel() < 300 do
     if turtlePlus.searchAndSelect('minecraft:planks') then
         turtle.refuel()
     elseif turtlePlus.searchAndSelect('minecraft:log') then
         turtle.craft(1)
     else
-        print('cant refuel')
-        break
+        if suckedLogsFromChest then
+            print('cant refuel')
+            break
+        else
+            for i = 1, chest.getInventorySize() do
+                local stack = chest.getStackInSlot(i)
+                if stack ~= nil and stack.id == 'minecraft:log' then
+                    chest.swapStacks(1, i)
+                    turtle.suck(stack.qty)
+                    break
+                end
+            end
+            suckedLogsFromChest = true
+        end
     end
 end
 
@@ -201,17 +220,12 @@ for i=1,16 do
     end
 end
 
-if peripheral.getType('front') ~= 'chest' then
-    error('need to be in front of chest')
-end
-
-local chest = peripheral.wrap('front')
 
 for i = 1, chest.getInventorySize() do
     local stack = chest.getStackInSlot(i)
-    if stack.id == 'minecraft:sapling' then
+    if stack ~= nil and stack.id == 'minecraft:sapling' then
         chest.swapStacks(1, i)
-        turtle.suck(chest.qty)
+        turtle.suck(stack.qty)
         break
     end
 end
