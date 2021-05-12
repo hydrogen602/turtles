@@ -169,26 +169,51 @@ local after = turtle.getFuelLevel()
 print('Consumed '..(before-after)..' fuel')
 
 t:faceDir(turtlePlus.RelativeDir.REVERSE)
+local foundLogs = false
+for i=1,16 do
+    local data = turtle.getItemDetail(i)
+    if data ~= nil then
+        if data['name'] == 'minecraft:log' and not foundLogs then
+            foundLogs = true
+        else
+            turtle.select(i)
+            turtle.drop()
+        end
+    end
+end
+
 while turtle.getFuelLevel() < 300 do
     if turtlePlus.searchAndSelect('minecraft:planks') then
         turtle.refuel()
     elseif turtlePlus.searchAndSelect('minecraft:log') then
-        turtle.craft(1) -- keep 1
+        turtle.craft(1)
     else
-        --if turtlePlus.searchAndSelect('minecraft:log') and turtle.suck() then
-            
-        --else
         print('cant refuel')
         break
-        --end
     end
 end
 
-turtlePlus.searchAndSelect('minecraft:sapling')
-turtle.suck()
-
-while turtlePlus.searchAndSelect('minecraft:log') do
-
-    turtle.drop(math.max(turtle.getItemCount()-5, 0))
+for i=1,16 do
+    local data = turtle.getItemDetail(i)
+    if data ~= nil then
+        turtle.select(i)
+        turtle.drop()
+    end
 end
+
+if peripheral.getType('front') ~= 'chest' then
+    error('need to be in front of chest')
+end
+
+local chest = peripheral.wrap('front')
+
+for i = 1, chest.getInventorySize() do
+    local stack = chest.getStackInSlot(i)
+    if stack.id == 'minecraft:sapling' then
+        chest.swapStacks(1, i)
+        turtle.suck(chest.qty)
+        break
+    end
+end
+
 t:faceOriginal()
