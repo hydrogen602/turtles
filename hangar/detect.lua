@@ -32,6 +32,10 @@ for _, name in pairs(p) do
         -- enemy
         local f = io.open('.dat', "a")
         f:write(name..' here, day='..os.day()..' hour='..os.time()..'\n')
-        f:close()     
+        f:close()
+
+        f = io.open('.details', 'w')
+        f:write(sensor.getTargetDetails(name))
+        f:close()
     end
 end
