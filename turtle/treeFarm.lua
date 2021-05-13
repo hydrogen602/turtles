@@ -20,7 +20,8 @@ local turtlePlus = {
     getBlockName=getBlockName,
     searchAndSelect=searchAndSelect,
     RelativeDir=RelativeDir,
-    TurtlePlus=TurtlePlus
+    TurtlePlus=TurtlePlus,
+    Chest=Chest
 }
 --]]
 
@@ -182,11 +183,7 @@ for i=1,16 do
     end
 end
 
-if peripheral.getType('front') ~= 'chest' then
-    error('need to be in front of chest')
-end
-
-local chest = peripheral.wrap('front')
+local chest = turtlePlus.Chest('front')
 
 local suckedLogsFromChest = false
 while turtle.getFuelLevel() < 300 do
@@ -199,14 +196,7 @@ while turtle.getFuelLevel() < 300 do
             print('cant refuel')
             break
         else
-            for i = 1, chest.getInventorySize() do
-                local stack = chest.getStackInSlot(i)
-                if stack ~= nil and stack.id == 'minecraft:log' then
-                    chest.swapStacks(1, i)
-                    turtle.suck(stack.qty)
-                    break
-                end
-            end
+            Chest:getStack('minecraft:log')
             suckedLogsFromChest = true
         end
     end
@@ -220,14 +210,6 @@ for i=1,16 do
     end
 end
 
-
-for i = 1, chest.getInventorySize() do
-    local stack = chest.getStackInSlot(i)
-    if stack ~= nil and stack.id == 'minecraft:sapling' then
-        chest.swapStacks(1, i)
-        turtle.suck(stack.qty)
-        break
-    end
-end
+Chest:getStack('minecraft:sapling')
 
 t:faceOriginal()

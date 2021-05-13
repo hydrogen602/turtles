@@ -235,3 +235,44 @@ function searchAndSelect(name)
     end
     return false
 end
+
+-- Inventory Management
+
+Chest = {
+    chestRef = nil
+}
+
+function Chest:new(side)
+    if type(side) ~= "string" then
+        error("Chest:new => TypeError: Expected string but got "..type(side))
+    end
+
+    if peripheral.getType(side) ~= 'chest' then
+        error('No chest found at side "'..side..'"')
+    end
+    
+    local chest = peripheral.wrap(side)
+    if chest == nil then
+        error('Chest peripheral is nil even though it was previously found')
+    end
+
+    o = {chestRef = chest}
+    setmetatable(o, self)
+    self.__index = self
+    return o
+end
+
+setmetatable(Chest, {__call=Chest.new})
+
+function Chest:getStack(name)
+    for i = 1, self.chestRef.getInventorySize() do
+        local stack = self.chestRef.getStackInSlot(i)
+        if stack ~= nil and stack.id == name then
+            self.chestRef.swapStacks(1, i)
+            turtle.suck(stack.qty)
+            self.chestRef.swapStacks(i, 1)
+            return true
+        end
+    end
+    return false
+end
