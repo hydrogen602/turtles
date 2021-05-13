@@ -196,7 +196,7 @@ while turtle.getFuelLevel() < 300 do
             print('cant refuel')
             break
         else
-            Chest:getStack('minecraft:log')
+            chest:getStack('minecraft:log')
             suckedLogsFromChest = true
         end
     end
@@ -210,6 +210,6 @@ for i=1,16 do
     end
 end
 
-Chest:getStack('minecraft:sapling')
+chest:getStack('minecraft:sapling')
 
 t:faceOriginal()
