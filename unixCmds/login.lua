@@ -15,7 +15,7 @@ local settings = {
 }
 
 function settings:save()
-    local s = textutils.serializeJSON({
+    local s = textutils.serialize({
         failed=self.failed,
         lockedUntil=self.lockedUntil,
         passwd=self.passwd
@@ -29,9 +29,9 @@ function settings:load()
     local function helper() 
         if fs.exists('/.passwd') then
             local f = io.open('/.passwd')
-            local s = f:read()
+            local s = f:read('*a')
             f:close()
-            local tab = textutils.unserializeJSON(s)
+            local tab = textutils.unserialize(s)
             if tab.failed == nil or tab.lockedUntil == nil or tab.passwd == nil then
                 error('invalid settings')
             end
@@ -76,9 +76,9 @@ while true do
                 local timeLockedMin = 2*(settings.failed-3) + 5
                 settings.lockedUntil = unixtime() + 60 * timeLockedMin
                 print(settings.failed.." failed password attempts, locking for "..timeLockedMin.." min")
+                sleep(5)
             end
             settings:save()
-            sleep(5)
         else
             print('Successfully authenticated')
             settings.failed = 0
