@@ -15,7 +15,11 @@ local settings = {
 }
 
 function settings:save()
-    local s = textutils.serializeJSON(self)
+    local s = textutils.serializeJSON({
+        failed=self.failed,
+        lockedUntil=self.lockedUntil,
+        passwd=self.passwd
+    })
     local f = io.open('/.passwd', 'w')
     f:write(s)
     f:close()
