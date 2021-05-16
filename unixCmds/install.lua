@@ -40,6 +40,7 @@ function main()
     for s in shell.path():gmatch("[^:]+") do
         if s == '/bin' then
             setPathExists = true
+            break
         end
     end
     
