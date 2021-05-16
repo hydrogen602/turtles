@@ -24,16 +24,40 @@ function main()
         counter = counter + 1
     end
 
-    local f = io.open('/startup', 'a')
+    local setPathExists = false
+    -- if fs.exists('/startup') then
+    --     local f = io.open('/startup')
+    --     local data = f:read()
+    --     f:close()
+    --     for s in data:gmatch("[^\r\n]+") do
+    --         if data:find('shell[.]setPath[(]shell[.]path[(][)] [.][.] ":/bin"[)]') ~= nil then
+    --             setPathExists = true
+    --             break
+    --         end
+    --     end
+    -- end
 
-    if not f then 
-        print('Could not open file /startup')
+    for s in shell.path():gmatch("[^:]+") do
+        if s == '/bin' then
+            setPathExists = true
+        end
     end
+    
+    if setPathExists then
+        print("Found /bin in path, not editing /startup")
+    else
+        print("/bin not in path, appending /startup")
+        local f = io.open('/startup', 'a')
 
-    f:write('\n')
-    f:write('shell.setPath(shell.path() .. ":/bin")\n')
+        if not f then 
+            print('Could not open file /startup')
+        end
 
-    f:close()
+        f:write('\n')
+        f:write('shell.setPath(shell.path() .. ":/bin")\n')
+
+        f:close()
+    end
 
     print('Done, installed ', counter, ' files')
 
