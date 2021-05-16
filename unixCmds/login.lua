@@ -62,27 +62,29 @@ while true do
         local timeleft = settings.lockedUntil - unixtime()
         print('Locked because of '..settings.failed..' failed password attempts for another '..(math.ceil(timeleft/60))..' min')
         sleep(60)
-    end
-
-    write('Password: ')
-    local input = read("*")
-    if input ~= settings.passwd then
-        print('Incorrect password')
-        settings.failed = settings.failed + 1
-        if settings.failed >= 3 then
-            -- 3 fails = 5 min
-            -- 4 fails = 7 min
-            local timeLockedMin = 2*(settings.failed-3) + 5
-            settings.lockedUntil = unixtime() + 60 * timeLockedMin
-            print(settings.failed.." failed password attempts, locking for "..timeLockedMin.." min")
-        end
-        settings:save()
-        sleep(5)
+        term.clear()
+        term.setCursorPos(1,1)
     else
-        print('Successfully authenticated')
-        settings.failed = 0
-        settings:save()
-        break
+        write('Password: ')
+        local input = read("*")
+        if input ~= settings.passwd then
+            print('Incorrect password')
+            settings.failed = settings.failed + 1
+            if settings.failed >= 3 then
+                -- 3 fails = 5 min
+                -- 4 fails = 7 min
+                local timeLockedMin = 2*(settings.failed-3) + 5
+                settings.lockedUntil = unixtime() + 60 * timeLockedMin
+                print(settings.failed.." failed password attempts, locking for "..timeLockedMin.." min")
+            end
+            settings:save()
+            sleep(5)
+        else
+            print('Successfully authenticated')
+            settings.failed = 0
+            settings:save()
+            break
+        end
     end
 end
 
