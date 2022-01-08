@@ -59,7 +59,7 @@ while true do
 
     local counter = scroll
     for _, item in pairs(stuff) do
-        if counter < h - 2 then
+        if counter < -h + 2 then
             break
         end
         if counter <= 0 then
